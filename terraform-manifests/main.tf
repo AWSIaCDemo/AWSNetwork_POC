@@ -9,15 +9,26 @@ module "vpc" {
   version = "3.0.0"
 
   # VPC Basic Details
-  name = "Network-Prod-E1-VPC" 
+  name = var.vpc_name 
   cidr = var.vpc_cidr_block
   azs             = var.vpc_availability_zones
-  #name = "Network-Prod-E1-Public-SNET"
-  public_subnets  = var.vpc_public_subnets
-  #name = "Network-Prod-E1-Private-SNET"
+}
+###############################################################################
+# Public Subnet Creation
+############################################################################### 
+resource "aws_subnet" "Network-Prod-E1-PU-SNET" {  
+ public_subnets  = var.vpc_public_subnets
+} 
+###############################################################################
+# Private Subnet Creation
+############################################################################### 
+ resource "aws_subnet" "Network-Prod-E1-PR-SNET" {   
   private_subnets = var.vpc_private_subnets  
-
-  # NAT Gateways - Outbound Communication
+ }
+################################################################################
+# NAT Gateway
+################################################################################
+  resource "aws_eip" "Network-Prod-E1-NATGW" {
   enable_nat_gateway = var.vpc_enable_nat_gateway 
   single_nat_gateway = var.vpc_single_nat_gateway
 
@@ -36,10 +47,7 @@ module "vpc" {
   private_subnet_tags = {
     Type = "Private Subnets"
   }  
-  database_subnet_tags = {
-    Type = "Private Database Subnets"
-  }
-}
+ }
 
 ###################################################################################
 # Security Group Public
